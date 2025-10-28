@@ -3,85 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Formulário de Matrícula</title>
+  <title>Formulário de Matrícula — Revit</title>
   <style>
-    /* estilos básicos (pode manter os seus) */
-    body{font-family:Arial,Helvetica,sans-serif;background:#F5E6D3;color:#2B5F5F;padding:20px}
-    .container{max-width:800px;margin:30px auto;background:#fff;padding:28px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
-    label{display:block;margin:8px 0 4px}
+    body{font-family:Segoe UI,Arial,sans-serif;background:#F5E6D3;color:#2B5F5F;padding:18px}
+    .container{max-width:760px;margin:28px auto;background:#fff;padding:28px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+    label{display:block;margin:10px 0 6px;font-weight:600}
     input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
-    button{background:#B8503C;color:white;padding:10px 16px;border:0;border-radius:8px;cursor:pointer;margin-top:10px}
-    .msg{margin-top:12px;font-size:0.95rem}
+    textarea{min-height:100px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    button{background:#B8503C;color:white;border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:700}
+    .msg{margin-top:12px}
+    @media(max-width:600px){.row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <main class="container">
+  <main class="container" role="main">
     <h1>Formulário de Matrícula</h1>
-    <p>Curso: Revit do Zero na Prática</p>
+    <p style="margin-bottom:14px">Curso: Revit do Zero na Prática</p>
 
     <form id="matriculaForm">
-      <label for="name">Nome *</label>
+      <label for="name">Nome completo *</label>
       <input id="name" name="name" type="text" required>
 
-      <label for="email">E‑mail *</label>
-      <input id="email" name="email" type="email" required>
+      <div class="row">
+        <div>
+          <label for="email">E‑mail *</label>
+          <input id="email" name="email" type="email" required>
+        </div>
+        <div>
+          <label for="phone">Telefone</label>
+          <input id="phone" name="phone" type="tel" placeholder="(xx) xxxxx-xxxx">
+        </div>
+      </div>
 
-      <label for="phone">Telefone</label>
-      <input id="phone" name="phone" type="tel">
-
-      <label for="curso">Curso/Turma</label>
+      <label for="curso">Curso / Turma</label>
       <select id="curso" name="curso">
         <option value="revit-zero">Revit do Zero na Prática</option>
       </select>
 
-      <label for="message">Mensagem</label>
+      <label for="message">Mensagem (opcional)</label>
       <textarea id="message" name="message"></textarea>
 
-      <!-- hidden para o template: configure template para aceitar esses campos -->
-      <!-- Se no template você deixou o destinatário fixo para wilmardutra@gmail.com, não precisa enviar to_email -->
-      <input type="hidden" name="to_email" value="wilmardutra@gmail.com">
+      <div class="actions">
+        <div class="small">Campos com * são obrigatórios</div>
+        <button id="submitBtn" type="submit">Enviar inscrição</button>
+      </div>
 
-      <button type="submit">Enviar inscrição</button>
+      <div id="status" class="msg" role="status" aria-live="polite"></div>
     </form>
-
-    <div id="status" class="msg" role="status" aria-live="polite"></div>
   </main>
 
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
   <script>
     (function(){
-      // inicialize com seu USER ID do EmailJS
-      emailjs.init('YOUR_USER_ID');
+      // Cole aqui o link público do Drive (download direto ou URL da página)
+      const DRIVE_LINK = 'https://drive.google.com/uc?id=FILE_ID&export=download';
 
       const form = document.getElementById('matriculaForm');
       const status = document.getElementById('status');
+      const submitBtn = document.getElementById('submitBtn');
 
       form.addEventListener('submit', function(e){
         e.preventDefault();
-        status.textContent = 'Enviando...';
+        status.style.color = '#333';
+        status.textContent = 'Aguarde... você será redirecionado em instantes.';
+        submitBtn.disabled = true;
 
-        // prepare os dados para o template do EmailJS
-        const templateParams = {
-          name: form.name.value,
-          email: form.email.value,
-          phone: form.phone.value,
-          curso: form.curso.value,
-          message: form.message.value,
-          to_email: 'wilmardutra@gmail.com' // só se necessário no template
-        };
-
-        // envia usando emailjs.send (ou sendForm)
-        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
-        .then(function(response) {
-          status.style.color = 'green';
-          status.textContent = 'Enviado com sucesso! Obrigado.';
-          form.reset();
-        }, function(error) {
-          console.error('FAILED...', error);
-          status.style.color = 'red';
-          status.textContent = 'Erro ao enviar. Tente novamente ou me avise.';
-        });
+        // Pequeno delay para o usuário ver a mensagem
+        setTimeout(function(){
+          window.location.href = DRIVE_LINK;
+        }, 800);
       });
     })();
   </script>
